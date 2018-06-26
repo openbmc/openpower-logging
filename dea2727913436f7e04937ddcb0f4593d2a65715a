@@ -1,0 +1,8 @@
+Code-Review+1: Brad Bishop <bradleyb@fuzziesquirrel.com>
+Code-Review+2: Deepak Kodihalli <dkodihal@in.ibm.com>
+Verified+1: Deepak Kodihalli <dkodihal@in.ibm.com>
+Submitted-by: Deepak Kodihalli <dkodihal@in.ibm.com>
+Submitted-at: Tue, 26 Jun 2018 06:41:00 +0000
+Reviewed-on: https://gerrit.openbmc-project.xyz/10673
+Project: openbmc/openpower-logging
+Branch: refs/heads/master
