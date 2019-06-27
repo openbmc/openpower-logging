@@ -1,0 +1,8 @@
+Code-Review+2: Deepak Kodihalli <dkodihal@in.ibm.com>
+Ok-To-Test+1: Jenkins <openbmc-ci-admin@ozlabs.org>
+Verified+1: Jenkins <openbmc-ci-admin@ozlabs.org>
+Submitted-by: Matt Spinler <spinler@us.ibm.com>
+Submitted-at: Thu, 27 Jun 2019 18:54:45 +0000
+Reviewed-on: https://gerrit.openbmc-project.xyz/c/openbmc/openpower-logging/+/21705
+Project: openbmc/openpower-logging
+Branch: refs/heads/master
