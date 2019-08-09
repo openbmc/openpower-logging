@@ -1,0 +1,452 @@
+{
+    "title": "PEL message registry schema",
+    "$id": "http://github.com/openbmc/openpower-logging/pels/registry/schema/schema.json",
+    "description": "This schema describes JSON used for 1) data needed for converting event logs to PELs, and 2) data still needed even when the PEL was provided by the event log.",
+    "type": "object",
+
+    "properties":
+    {
+        "PELs": {
+            "title": "This is an array of entries that specify PEL fields for event logs",
+            "$ref": "#/definitions/pels"
+        },
+
+        "PELImports": {
+            "title": "This is an array of entries that specify fields for event logs that import PELs",
+            "$ref": "#/definitions/pelImports"
+        }
+    },
+
+    "additionalProperties": false,
+    "minItems": 1,
+    "uniqueItems": true,
+
+    "definitions": {
+        "pels":
+        {
+            "description": "Each entry in this array is for converting an event log to a PEL",
+            "type": "array",
+            "items": {
+                "description": "The schema for a single event log registry entry",
+                "type": "object",
+                "properties":
+                {
+                    "Name": {"$ref": "#/definitions/errorName" },
+
+                    "Notes": {"$ref": "#/definitions/errorNotes" },
+
+                    "SRC": {"$ref": "#/definitions/src" },
+
+                    "Subsystem": {"$ref": "#/definitions/subsystem" },
+
+                    "Severity": {"$ref": "#/definitions/severity" },
+
+                    "MfgSeverity": {"$ref": "#/definitions/mfgSeverity" },
+
+                    "EventScope": {"$ref": "#/definitions/eventScope" },
+
+                    "EventType": {"$ref": "#/definitions/eventType" },
+
+                    "ActionFlags": {"$ref": "#/definitions/actionFlags" },
+
+                    "MfgActionFlags": {"$ref": "#/definitions/mfgActionFlags" },
+
+                    "Redfish": {"$ref": "#/definitions/redfish" }
+                },
+
+                "required": ["Name", "SRC", "Subsystem", "Redfish",
+                             "ActionFlags"],
+                "additionalProperties": false
+            }
+        },
+
+        "pelImports":
+        {
+            "description": "Each entry in this array contains information still needed even if there is already a PEL. TODO"
+        },
+
+        "errorName":
+        {
+            "description": "The 'Message' property of an OpenBMC event log",
+            "type": "string"
+        },
+
+        "src":
+        {
+            "description": "Contains fields describing the primary SRC embedded in the PEL",
+            "type": "object",
+
+            "properties":
+            {
+                "Type": {"$ref": "#/definitions/srcType" },
+
+                "ReasonCode": {"$ref": "#/definitions/reasonCode" },
+
+                "SymptomIDFields": {"$ref": "#/definitions/symptomID" },
+
+                "Words6To9": {"$ref": "#/definitions/srcWords6To9" },
+
+                "PowerFault": {"$ref": "#/definitions/powerFault" },
+
+                "Callouts": {"$ref": "#/definitions/callouts" }
+            },
+
+            "required": ["Type", "ReasonCode", "Words6To9"],
+            "additionalProperties": false
+        },
+
+        "redfish":
+        {
+            "description": "This contains Redfish message related items.",
+            "type": "object",
+
+            "properties":
+            {
+                "RedfishMessage": {"$ref": "#/definitions/redfishMessage" },
+
+                "RedfishDesc": {"$ref": "#/definitions/redfishDesc" },
+
+                "RedfishMessageArgs": {"$ref": "#/definitions/redfishMessageArgs" }
+            },
+            "additionalProperties": false,
+            "required": ["RedfishMessage", "RedfishDesc"]
+        },
+
+        "srcType":
+        {
+            "description": "The first byte of the SRC ASCII string. Optional and defaults to B1",
+            "type": "string",
+            "enum": ["B1", "11"]
+        },
+
+        "errorNotes":
+        {
+            "description": "Any notes about the error. Optional.",
+            "type": "string"
+        },
+
+        "reasonCode":
+        {
+            "description": "String representation of the 2 byte reason code, like 0xABCD.  The reason code is the 2nd half of the 8 character SRC ASCII String field, such as B1FFABCD.",
+            "type": "string",
+            "pattern": "^0x[0-9a-fA-F]{4}$",
+
+            "examples": [
+                "0x3355"
+            ]
+        },
+
+        "subsystem":
+        {
+            "description": "PEL subsystem enumeration.  Only BMC relevant subsystems listed.  See the PEL spec for more detailed definitions.",
+            "type": "string",
+            "enum": ["processor", "processor_fru", "processor_chip",
+                     "processor_unit", "processor_bus",
+
+                     "memory", "memory_ctlr", "memory_bus", "memory_dimm",
+                     "memory_fru", "external_cache",
+
+                     "io", "io_hub", "io_bridge", "io_bus", "io_processor",
+                     "io_hub_other", "phb",
+
+                     "io_adapter", "io_adapter_comm", "io_device",
+                     "io_device_dasd",
+
+                     "cec_hardware", "cec_sp_a", "cec_sp_b",
+                     "cec_node_controller", "cec_vpd",
+                     "cec_i2c", "cec_chip_iface", "cec_clocks", "cec_op_panel",
+                     "cec_tod", "cec_storage_device", "cec_sp_hyp_iface",
+                     "cec_service_network", "cec_sp_hostboot_iface",
+
+                     "power", "power_supply", "power_control_hw", "power_fans",
+                     "power_sequencer",
+
+                     "others", "other_hmc", "other_test_tool", "other_media",
+                     "other_multiple_subsystems", "other_na", "other_info_src",
+
+                     "surv_sp_lost_hyp", "surv_sp_lost_hmc",
+
+                     "bmc_firmware", "spcn_firmware",
+
+                     "input_power_source", "ambient_temp", "user_error",
+                     "corrosion"]
+        },
+
+        "severity":
+        {
+            "description": "PEL severity enumeration.  Optional.  If not provided, will map the event log severity.  See the PEL spec for more detailed definitions.",
+            "type": "string",
+
+            "enum": ["non_error",
+
+                     "recovered",
+
+                     "predictive", "predictive_degraded_perf",
+                     "predictive_reboot", "predictive_reboot_degraded",
+                     "predictive_redundancy_loss",
+
+                     "unrecoverable", "unrecoverable_degraded_perf",
+                     "unrecoverable_redundancy_loss",
+                     "unrecoverable_redundancy_loss_perf",
+                     "unrecoverable_loss_of_function",
+
+                     "critical", "critical_system_term",
+                     "critical_imminent_failure",
+                     "critical_partition_term",
+                     "critical_partition_imminent_failure",
+
+                     "diagnostic_error", "diagnostic_error_incorrect_results",
+
+                     "symptom_recovered", "symptom_predictive",
+                     "symptom_unrecoverable", "symptom_critical",
+                     "symptom_diag_err"]
+        },
+
+        "mfgSeverity":
+        {
+            "description": "The PEL severity to use in manufacturing reporting mode",
+            "$ref": "#/definitions/severity"
+        },
+
+        "eventScope":
+        {
+            "description": "The event scope PEL field. Optional and defaults to entire_platform",
+            "type": "string",
+            "enum": ["entire_platform", "single_partition", "multiple_partitions",
+                     "possibly_multiple_partitions"]
+        },
+
+        "eventType":
+        {
+            "description": "The event type PEL field. Optional and defaults to na",
+            "type": "string",
+            "enum": ["na", "misc_information_only", "tracing_event",
+                     "dump_notification"]
+        },
+
+        "powerFault":
+        {
+            "description": "The Power Fault SRC field (bit 6 in byte 1 of header). Optional and defaults to false",
+            "type": "boolean"
+        },
+
+        "actionFlags":
+        {
+            "description": "The action flags Private Header PEL field",
+            "type": "array",
+            "items":
+            {
+                "description": "List of action flags",
+                "type": "string",
+                "enum": ["service_action", "hidden", "report", "dont_report",
+                         "call_home", "isolation_incomplete", "termination"]
+            }
+        },
+
+        "mfgActionFlags":
+        {
+            "description": "The PEL action flags to use in manufacturing reporting mode",
+            "$ref": "#/definitions/actionFlags"
+        },
+
+        "redfishDesc":
+        {
+            "description": "Redfish message registry description field",
+            "type": "string"
+        },
+
+        "redfishMessage":
+        {
+            "description": "Redfish message registry message field.  Other software will substitue the message arguments into the %1, %2, etc, placeholders, using types specified in redfishMessageArgs. ",
+            "type": "string"
+        },
+
+        "redfishMessageArgs":
+        {
+            "description": "Redfish message registry message args field.  Only required if there are some.",
+            "type": "array",
+            "items":
+            {
+                "type": "object",
+                "properties":
+                {
+                    "ArgType": {
+                        "description": "The argument type",
+                        "type": "string",
+                        "enum": ["number", "string"]
+                    },
+
+                    "ArgDesc": {
+                        "description": "The argument description",
+                        "type": "string"
+                    },
+                    "ArgSource":
+                    {
+                        "description": "Where to get the argument from: either from an SRC word or an AdditionalData field",
+                        "oneOf":
+                        [
+                            {
+                                "type": "object",
+                                "properties":
+                                {
+                                    "SRCWord":
+                                    {
+                                        "description": "Which SRC word 6-9 to find the data in",
+                                        "type": "string",
+                                        "pattern": "^[6-9]$"
+                                    }
+                                },
+                                "additionalProperties": false
+                            },
+                            {
+                                "type": "object",
+                                "properties":
+                                {
+                                    "AdditionalDataProp":
+                                    {
+                                        "description": "Which AdditionalData field to find the data in",
+                                        "name": "string"
+                                    }
+                                },
+                                "additionalProperties": false
+                            }
+                        ]
+                    }
+                },
+
+                "required": ["ArgType", "ArgDesc", "ArgSource"],
+                "additionalProperties": false,
+
+                "examples": [
+                    {"ArgType": "string", "ArgDesc": "power unit type",
+                     "ArgSource": {"AdditionalDataProp": "TYPE"}}
+                ]
+            }
+        },
+
+        "symptomID":
+        {
+            "description": "Defines a custom Symptom ID, to be appended to the ASCII string word and separated by underscores.  The maximum size of the Symptom ID field is 80 characters.  The default is ASCIISTRING_SRCWord3 (e.g. B1103500_12345678).",
+            "type": "array",
+            "items":
+            {
+                "type": "string",
+                "enum": ["SRCWord3", "SRCWord4", "SRCWord5", "SRCWord6",
+                         "SRCWord7", "SRCWord8", "SRCWord9"]
+            },
+            "minItems": 1,
+            "maxItems": 8,
+            "uniqueItems": true,
+
+            "examples": [
+                ["SRCWord3", "SRCWord6"]
+            ]
+        },
+
+        "srcWords6To9":
+        {
+            "description": "This details what the user defined SRC hex words mean, and which AdditionalData properties to get them from.  Must be present, but can be empty.",
+            "type": "object",
+            "patternProperties":
+            {
+                "^[6-9]$":
+                {
+                    "type": "object",
+                    "properties":
+                    {
+                        "description":
+                        {
+                            "description": "What the value in the field represents.",
+                            "type": "string"
+                        },
+                        "AdditionalDataPropSource":
+                        {
+                            "description": "Which AdditionalData property key to get the data from.",
+                            "type": "string"
+                        }
+                    },
+
+                    "additionalProperties": false
+                },
+
+                "examples":
+                {
+                    "SRCWords6To9":
+                    {
+                        "6":
+                        {
+                            "description": "Failing PSU number",
+                            "AdditionalDataPropSource": "PSU_NUM"
+                        }
+                    }
+                }
+            },
+            "additionalProperties": false
+        },
+
+        "priority":
+        {
+            "description": "The callout priority",
+            "type": "string",
+            "enum": ["high", "medium", "medium_group_a", "medium_group_b",
+                     "medium_group_c", "low"]
+        },
+
+        "symbolicFRUCallout":
+        {
+            "description": "A Symbolic FRU callout and its priority",
+            "type": "object",
+            "properties":
+            {
+                "SymbolicFRU":
+                {
+                    "description": "The callout enum.  More can be added as needed",
+                    "type": "string",
+                    "enum": ["TODO"]
+                },
+                "Priority": {"$ref": "#/definitions/priority" }
+            },
+            "additionalProperties": false,
+            "required": ["SymbolicFRU", "Priority"]
+        },
+
+        "procedureFRUCallout":
+        {
+            "description": "A Procedure FRU callout and its priority",
+            "type": "object",
+            "properties":
+            {
+                "Procedure":
+                {
+                    "description": "The callout enum.  More can be added as needed",
+                    "type": "string",
+                    "enum": ["bmc_code"]
+                },
+                "Priority": {"$ref": "#/definitions/priority" }
+            },
+            "additionalProperties": false,
+            "required": ["Procedure", "Priority"]
+        },
+
+        "callouts":
+        {
+            "description": "Contains procedure and/or symbolic callouts.  Optional.",
+            "type": "array",
+
+            "items":
+            {
+                "anyOf":
+                [
+                    {
+                        "$ref": "#/definitions/symbolicFRUCallout"
+                    },
+                    {
+                        "$ref": "#/definitions/procedureFRUCallout"
+                    }
+                ]
+            },
+
+            "additionalItems": false
+        }
+    }
+}
