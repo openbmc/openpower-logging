@@ -1,0 +1,38 @@
+{
+    "PELs":
+    [
+        {
+            "Name": "xyz.openbmc_project.Power.Fault",
+            "ReasonCode": "0x2030",
+            "SRCType": "11",
+            "Subsystem": "power_supply",
+            "Severity": "unrecoverable",
+            "ActionFlags": ["service_action", "report"],
+            "RedfishDesc": "A PGOOD Fault",
+            "RedfishMsg": "%1 %2 had a PGOOD Fault",
+            "RedfishMsgArgs":
+            [
+                {
+                    "ArgType": "number", "ArgDesc": "power unit type",
+                    "ArgSource": {"AdditionalDataProp": "PS_TYPE"}
+                },
+                {
+                    "ArgType": "number", "ArgDesc": "instance number",
+                    "ArgSource": {"AdditionalDataProp": "PS_NUM" }
+                }
+            ],
+
+            "SymptomIDFields":
+            ["SRCWord3", "SRCWord6"],
+
+            "SRCWords6To9":
+            {
+                "6":
+                {
+                    "description": "Failing unit number",
+                    "AdditionalDataPropSource": "PS_NUM"
+                }
+            }
+        }
+    ]
+}
