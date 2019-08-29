@@ -5,7 +5,28 @@ A PEL plugin inside of phosphor-log-manager will use the message registry to
 create and store a PEL for every OpenBMC event log.
 
 ## Contents
+* [Component IDs](#component-ids)
 * [Message Registry](#message-registry-fields)
+
+## Component IDs
+
+A component ID is a 2 byte value of the form 0xYY00 used in a PEL to:
+1. Provide the upper byte (the YY from above) of an SRC reason code.
+2. Reside in the section header of the Private Header PEL section to specify
+   the error log creator's component ID.
+3. Reside in the section header of the User Header section to specify the error
+   log committer's component ID.
+4. Reside in the section header in the User Data section to specify which
+   parser to call to parse that section.
+
+The component ID shows up in the message registry as part of the [SRC Reason
+Code](#src-reason-code).  For example, if the reason code is 0x1122, then the
+component ID is 0x1100.
+
+Component IDs will be unique on a per-repository basis for errors unique to
+that repository.  When the same errors are created by multiple repositories,
+those errors will all share the same component ID.  The master list of
+component IDs is [here](ComponentIDs.md).
 
 ## Message Registry Fields
 The message registry schema is [here](registry/schema/schema.json), and the
